@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-repo/app.git'
+                git 'https://github.com/kerthiks/Blue_green_Depolyment.git'
             }
         }
 
