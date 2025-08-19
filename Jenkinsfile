@@ -9,7 +9,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/kerthiks/Blue_green_Depolyment.git'
+                // Explicitly specify the main branch here
+                git branch: 'main', url: 'https://github.com/kerthiks/Blue_green_Depolyment.git'
             }
         }
 
@@ -44,8 +45,9 @@ pipeline {
         stage('Switch Traffic') {
             steps {
                 script {
+                    // Use macOS compatible sed command for in-place replacement
                     sh """
-                    sed -i 's/${BLUE_PORT}/${GREEN_PORT}/' nginx/nginx.conf
+                    sed -i '' 's/${BLUE_PORT}/${GREEN_PORT}/' nginx/nginx.conf
                     nginx -s reload
                     """
                 }
