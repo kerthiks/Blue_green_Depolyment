@@ -9,25 +9,20 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Explicitly specify the main branch here
                 git branch: 'main', url: 'https://github.com/kerthiks/Blue_green_Depolyment.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    dockerImage = docker.build("your-app:${BUILD_NUMBER}")
-                }
+                sh "docker build -t your-app:${BUILD_NUMBER} ."
             }
         }
 
         stage('Deploy to Green') {
             steps {
-                script {
-                    sh "docker rm -f green || true"
-                    sh "docker run -d --name green -p ${GREEN_PORT}:3000 your-app:${BUILD_NUMBER}"
-                }
+                sh "docker rm -f green || true"
+                sh "docker run -d --name green -p ${GREEN_PORT}:3000 your-app:${BUILD_NUMBER}"
             }
         }
 
@@ -44,22 +39,17 @@ pipeline {
 
         stage('Switch Traffic') {
             steps {
-                script {
-                    // Use macOS compatible sed command for in-place replacement
-                    sh """
-                    sed -i '' 's/${BLUE_PORT}/${GREEN_PORT}/' nginx/nginx.conf
-                    nginx -s reload
-                    """
-                }
+                sh """
+                sed -i '' 's/${BLUE_PORT}/${GREEN_PORT}/' nginx/nginx.conf
+                nginx -s reload
+                """
             }
         }
 
         stage('Remove Old Version') {
             steps {
-                script {
-                    sh "docker rm -f blue || true"
-                    sh "docker rename green blue"
-                }
+                sh "docker rm -f blue || true"
+                sh "docker rename green blue"
             }
         }
     }
