@@ -1,10 +1,14 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:24.0.5' // Use a Docker image with Docker CLI pre-installed
+            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket for access to the host Docker daemon
+        }
+    }
 
     environment {
         BLUE_PORT = '8081'
         GREEN_PORT = '8082'
-        DOCKER_HOST = 'unix:///var/run/docker.sock' // Ensures Docker commands work with the local Docker daemon
     }
 
     stages {
