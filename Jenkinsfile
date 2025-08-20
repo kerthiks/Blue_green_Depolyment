@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:24.0.5' // Use a Docker image with Docker CLI pre-installed
-            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket for access to the host Docker daemon
-        }
-    }
+    agent any
 
     environment {
         BLUE_PORT = '8081'
