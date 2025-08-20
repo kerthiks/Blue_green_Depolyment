@@ -15,11 +15,11 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/kerthiks/Blue_green_Depolyment.git'
-            }
-        }
+       stage('Checkout') {
+    steps {
+        checkout scm
+    }
+}
 
         stage('Build Docker Image') {
             steps {
