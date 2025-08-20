@@ -51,14 +51,27 @@ pipeline {
         }
 
         stage('Switch Traffic') {
-            steps {
-                sh '''
-                    echo "⚙️ Switching NGINX traffic from blue to green..."
-                    sed -i '' 's/${BLUE_PORT}/${GREEN_PORT}/g' nginx/nginx.conf
-                    sudo nginx -s reload
-                '''
-            }
-        }
+    steps {
+        sh '''
+            echo "⚙️ Switching NGINX traffic from blue to green..."
+
+            if [ ! -f nginx/nginx.conf ]; then
+              echo "❌ nginx/nginx.conf not found!"
+              exit 1
+            fi
+
+            if [[ "$(uname)" == "Darwin" ]]; then
+              sed -i '' "s/${BLUE_PORT}/${GREEN_PORT}/g" nginx/nginx.conf
+            else
+              sed -i "s/${BLUE_PORT}/${GREEN_PORT}/g" nginx/nginx.conf
+            fi
+
+            # Reload nginx without password
+            sudo /usr/local/bin/nginx -s reload
+        '''
+    }
+}
+
 
         stage('Remove Old Version') {
             steps {
