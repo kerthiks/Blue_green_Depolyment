@@ -4,6 +4,7 @@ pipeline {
     environment {
         BLUE_PORT = '8081'
         GREEN_PORT = '8082'
+        DOCKER_HOST = 'unix:///var/run/docker.sock' // Ensures Docker commands work with the local Docker daemon
     }
 
     stages {
