@@ -5,13 +5,13 @@ pipeline {
         BLUE_PORT = '8081'
         GREEN_PORT = '8082'
         IMAGE_NAME = 'your-app'
-        DOCKER = '/opt/homebrew/bin/docker' // Full path to Docker for macOS
+        // DOCKER is removed to avoid hardcoded path
     }
 
     stages {
         stage('Check Docker') {
             steps {
-                sh "${DOCKER} --version"
+                sh 'docker --version'
             }
         }
 
@@ -23,16 +23,17 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh "${DOCKER} build -t ${IMAGE_NAME}:${BUILD_NUMBER} ."
+                sh 'docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .'
             }
         }
 
         stage('Deploy to Green') {
             steps {
-                sh """
-                    ${DOCKER} rm -f green || true
-                    ${DOCKER} run -d --name green -p ${GREEN_PORT}:3000 ${IMAGE_NAME}:${BUILD_NUMBER}
-                """
+                sh '''
+                    set -e
+                    docker rm -f green || true
+                    docker run -d --name green -p ${GREEN_PORT}:3000 ${IMAGE_NAME}:${BUILD_NUMBER}
+                '''
             }
         }
 
@@ -51,21 +52,21 @@ pipeline {
 
         stage('Switch Traffic') {
             steps {
-                sh """
+                sh '''
                     echo "⚙️ Switching NGINX traffic from blue to green..."
                     sed -i '' 's/${BLUE_PORT}/${GREEN_PORT}/g' nginx/nginx.conf
                     sudo nginx -s reload
-                """
+                '''
             }
         }
 
         stage('Remove Old Version') {
             steps {
-                sh """
+                sh '''
                     echo "🧹 Cleaning up old (blue) container..."
-                    ${DOCKER} rm -f blue || true
-                    ${DOCKER} rename green blue
-                """
+                    docker rm -f blue || true
+                    docker rename green blue
+                '''
             }
         }
     }
