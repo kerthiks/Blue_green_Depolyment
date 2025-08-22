@@ -67,7 +67,7 @@ pipeline {
             fi
 
             # Reload nginx without password
-            echo 'your-password' | sudo -S /opt/homebrew/bin/nginx -s reload
+            echo 'Sugei' | sudo -S /opt/homebrew/bin/nginx -s reload
            
         '''
     }
